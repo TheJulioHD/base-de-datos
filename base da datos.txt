@@ -1,0 +1,138 @@
+USE [congresos]
+GO
+/****** Object:  Table [dbo].[CatCongresos]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CatCongresos](
+	[IdCongreso] [int] IDENTITY(1,1) NOT NULL,
+	[Congreso] [varchar](150) NOT NULL,
+	[FechaCreacion] [datetime] NOT NULL,
+	[FechaModificacion] [datetime] NULL,
+	[img] [varchar](max) NULL,
+ CONSTRAINT [PK_CatCongresos] PRIMARY KEY CLUSTERED 
+(
+	[IdCongreso] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CatEmpresa]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CatEmpresa](
+	[IdEmpresa] [int] IDENTITY(1,1) NOT NULL,
+	[Empresa] [varchar](250) NOT NULL,
+	[FechaCreacion] [datetime] NOT NULL,
+	[FechaModificacion] [datetime] NULL,
+	[IdCongreso] [int] NOT NULL,
+	[InicioHora] [varchar](100) NOT NULL,
+	[FinHora] [varchar](100) NOT NULL,
+ CONSTRAINT [PK_CatEmpresa] PRIMARY KEY CLUSTERED 
+(
+	[IdEmpresa] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CatEquipo]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CatEquipo](
+	[IdEquipo] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[apellidop] [varchar](100) NOT NULL,
+	[apellidom] [varchar](100) NOT NULL,
+	[idcongreso] [int] NOT NULL,
+	[FechaCreacion] [datetime] NOT NULL,
+	[Fechamodificacion] [datetime] NULL,
+ CONSTRAINT [PK_CatEquipo] PRIMARY KEY CLUSTERED 
+(
+	[IdEquipo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CatTaller]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CatTaller](
+	[IdTaller] [int] IDENTITY(1,1) NOT NULL,
+	[Taller] [varchar](100) NOT NULL,
+	[Tallerista] [varchar](max) NOT NULL,
+	[FechaCreacion] [datetime] NOT NULL,
+	[Fechamodificacion] [datetime] NULL,
+	[IdCongreso] [int] NOT NULL,
+ CONSTRAINT [PK_CatTaller] PRIMARY KEY CLUSTERED 
+(
+	[IdTaller] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CatUsuario]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CatUsuario](
+	[IdUsuario] [int] IDENTITY(1,1) NOT NULL,
+	[Nombre] [varchar](150) NOT NULL,
+	[Apellidop] [varchar](150) NOT NULL,
+	[Apellidom] [varchar](150) NOT NULL,
+	[FechaNacimiento] [datetime] NOT NULL,
+	[Gender] [varchar](50) NOT NULL,
+	[uuidFirebase] [varchar](max) NOT NULL,
+ CONSTRAINT [PK_CatUsuario] PRIMARY KEY CLUSTERED 
+(
+	[IdUsuario] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  StoredProcedure [dbo].[SpCatCongresoLoad]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Julio Cunaca>
+-- Create date: <2024/03/08>
+-- Description:	<Carga todos los congresos>
+-- =============================================
+CREATE PROCEDURE [dbo].[SpCatCongresoLoad] 
+	-- Add the parameters for the stored procedure here
+	
+AS
+BEGIN
+	Select A.IdCongreso, A.Congreso, A.img from [dbo].[CatCongresos] A
+END
+GO
+/****** Object:  StoredProcedure [dbo].[SpCatCongresoLoadByID]    Script Date: 18/03/2024 09:34:42 a. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ --=============================================
+ --Author:		<Julio Cunaca>
+ --Create date: <2024/03/08>
+ --Description:	<Carga todos los congresos>
+ --=============================================
+CREATE PROCEDURE [dbo].[SpCatCongresoLoadByID] 
+	-- Add the parameters for the stored procedure here
+	--declare
+	@IdCongreso int = null
+AS
+BEGIN
+	Select 
+		A.IdCongreso, A.Congreso, A.img, B.IdEquipo,B.nombre, B.apellidop, B.apellidom,C.IdTaller,C.Taller,C.Tallerista,
+		D.IdEmpresa,D.Empresa, D.InicioHora, D.FinHora
+	from [dbo].[CatCongresos] A
+	LEFT JOIN [dbo].[CatEquipo] B ON A.IdCongreso = B.idcongreso
+	LEFT JOIN [dbo].[CatTaller] C ON A.IdCongreso = C.IdCongreso
+	LEFT JOIN [dbo].[CatEmpresa] D ON A.IdCongreso = D.IdCongreso
+	where A.IdCongreso = @IdCongreso
+END
+GO
